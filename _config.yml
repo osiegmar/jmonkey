@@ -1,0 +1,18 @@
+title: JMonkey
+description: >
+  JMonkey is a Java based development kit for "The Secret of Monkey Island"
+author:
+  name: Oliver Siegmar
+  email: "oliver@siegmar.de"
+
+minima:
+  date_format: "%Y-%m-%d"
+
+github_username: osiegmar
+
+theme: minima
+
+header_pages:
+  - file-formats/index.md
+  - curiosities.md
+  - secrets.md
