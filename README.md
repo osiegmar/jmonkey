@@ -4,26 +4,14 @@ This branch is used for publishing [https://osiegmar.github.io/jmonkey/](https:/
 
 ## Local testing
 
-### Install Ruby
+### Install Hugo
 
-See [Installing Ruby](https://www.ruby-lang.org/en/documentation/installation/).
+See [Install Hugo](https://gohugo.io/getting-started/installing/).
 
-### Install Bundler
-
-```sh
-gem install bundler
-```
-
-### Install Dependencies
+### Run Hugo
 
 ```sh
-bundle install
-```
-
-### Run Jekyll
-
-```sh
-bundle exec jekyll serve
+hugo server -D
 ```
 
 ## License
