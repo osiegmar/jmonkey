@@ -7,6 +7,7 @@ title: File formats
 * [Index file](index-file.md) (000.LFL) allows quick access to data stored in data files
 * [Font files](font-files.md) (90X.LFL) are the character sets and fonts used in the game
 * [Data files](data-files.md) (DISK0X.LEC) contains the actual data (images, sounds, game logic, etc.)
+* Amiga sound files (MUSIC.DAT and SAMPLE.DAT)
 * Other files (README.VGA, INSTALL.BAT, _INSTALL.BAT, MONKEY.EXE) are irrelevant for this project
 
 Those files were shipped on either 4 or 8 (3½ or 5¼ inch floppy disks).
