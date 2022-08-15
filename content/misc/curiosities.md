@@ -1,5 +1,4 @@
 ---
-layout: page
 title: Curiosities
 ---
 These are some curiosities found during the development of this project:

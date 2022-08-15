@@ -1,5 +1,4 @@
 ---
-layout: page
 title: Font files
 ---
 Information about the font (also known as charset) files `90X.LFL` (LFL is a known abbreviation for <u>L</u>ucas<u>f</u>ilm <u>L</u>td).

@@ -1,5 +1,4 @@
 ---
-layout: page
 title: File formats
 ---
 [The Secret of Monkey Island](https://en.wikipedia.org/wiki/The_Secret_of_Monkey_Island) consists of a couple of files in four categories:

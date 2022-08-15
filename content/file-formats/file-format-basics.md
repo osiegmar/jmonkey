@@ -1,5 +1,4 @@
 ---
-layout: page
 title: File format basics
 ---
 The `.LFL` and `.LEC` files are made-up of chunks. Every chunk consists of three parts: *length*, *type* and *value*.

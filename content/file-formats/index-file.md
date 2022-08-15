@@ -1,5 +1,4 @@
 ---
-layout: page
 title: Index file
 ---
 Information about the index file `000.LFL` (LFL is a known abbreviation for <u>L</u>ucas<u>f</u>ilm <u>L</u>td).

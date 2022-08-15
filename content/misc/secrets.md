@@ -1,5 +1,4 @@
 ---
-layout: page
 title: Secrets
 ---
 Below is a list of unknown ("secret") technical details:

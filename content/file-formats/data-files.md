@@ -1,5 +1,4 @@
 ---
-layout: page
 title: Data files
 ---
 Information about `DISK0X.LEC` files (LEC is a known abbreviation for <u>L</u>ucasArts <u>E</u>ntertainment <u>C</u>ompany).
