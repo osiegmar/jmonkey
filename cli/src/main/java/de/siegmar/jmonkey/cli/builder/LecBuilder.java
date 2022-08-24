@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.siegmar.jmonkey.cli.StatusInfo;
 import de.siegmar.jmonkey.commons.io.XorOutputStream;
 import de.siegmar.jmonkey.decoder.header.ChunkFO;
 import de.siegmar.jmonkey.decoder.header.ChunkFOItem;
@@ -44,7 +45,7 @@ public final class LecBuilder {
                              final Path outputDir, final int fileNo) throws IOException {
 
         final Path lecFile = outputDir.resolve("DISK%02d.LEC".formatted(fileNo));
-        System.out.println("Build LEC file " + lecFile);
+        StatusInfo.status("Build LEC file %s", lecFile);
 
         int offset = 0;
 
@@ -74,6 +75,8 @@ public final class LecBuilder {
 
             le.writeTo(leWriter);
         }
+
+        StatusInfo.success();
     }
 
 }

@@ -56,6 +56,7 @@ import de.siegmar.jmonkey.index.RoomOffset;
 public final class LflBuilder {
 
     private static final String ID_PATTERN = "%03d";
+    private static final boolean COMPARE_COMPILED = false;
 
     private final RoomMeta roomMeta;
     private final Path roomDir;
@@ -213,25 +214,26 @@ public final class LflBuilder {
     }
 
     private ByteString compileAndCompare(final String basename) throws IOException {
-        final Path origFile = scriptsDir.resolve(basename + ".bin");
         final Path srcFile = scriptsDir.resolve(basename + ".scu");
-        final Path compiledFile = scriptsDir.resolve(basename + ".compiled");
 
         final Program parsedProgram = new ScummParser(new ScummTokenizer(Files.readString(srcFile))).parse();
         final ByteString compiledProgram = new ScummCompiler().compile(parsedProgram);
 
-        compiledProgram.writeTo(compiledFile);
-
-        if (Files.mismatch(origFile, compiledFile) != -1) {
-            System.out.println("DIFFER: " + origFile + " / " + compiledFile);
+        if (COMPARE_COMPILED) {
+            final Path origFile = scriptsDir.resolve(basename + ".bin");
+            final Path compiledFile = scriptsDir.resolve(basename + ".compiled");
+            compiledProgram.writeTo(compiledFile);
+            if (Files.mismatch(origFile, compiledFile) != -1) {
+                System.out.println("DIFFER: " + origFile + " / " + compiledFile);
+            }
         }
+
         return compiledProgram;
     }
 
     private void appendSounds(final Node lf, final Path soundDirs, final int roOffset) {
         for (final Integer soundId : roomMeta.soundIds()) {
             final Path soundDir = soundDirs.resolve(ID_PATTERN.formatted(soundId));
-            System.out.println("Add sound " + soundDir);
             final Path waFile = soundDir.resolve("WA.bin");
             final Path adFile = soundDir.resolve("AD.bin");
 

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import de.siegmar.jmonkey.cli.RoomMeta;
+import de.siegmar.jmonkey.cli.StatusInfo;
 import de.siegmar.jmonkey.commons.io.BasicChunk;
 import de.siegmar.jmonkey.commons.misc.ColorPalette;
 import de.siegmar.jmonkey.commons.misc.MaskLayer;
@@ -103,7 +104,7 @@ public class LfExporter {
             throw new UncheckedIOException(e);
         }
 
-        System.out.printf("Export room #%03d (%s)%n", roomId, roomName);
+        StatusInfo.status("Export room #%03d (%s)", roomId, roomName);
     }
 
     public int getRoomId() {
@@ -196,6 +197,8 @@ public class LfExporter {
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
+
+        StatusInfo.success();
     }
 
     private void writeImage(final LayeredImage i, final File output) {

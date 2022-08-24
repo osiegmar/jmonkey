@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import de.siegmar.jmonkey.cli.StatusInfo;
 import de.siegmar.jmonkey.commons.io.BasicChunk;
 import de.siegmar.jmonkey.index.Index;
 import de.siegmar.jmonkey.index.RoomOffset;
@@ -50,6 +51,7 @@ public class ExportVisitor implements LecVisitor {
     @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
     public boolean visit(final LecFile lecFile, final LecChunk chunk) {
+        StatusInfo.status("Export chunk '%s'", chunk.type().name());
         switch (chunk.type()) {
             case LE, FO, LC, NL, SL -> {
                 // ignore
@@ -94,10 +96,10 @@ public class ExportVisitor implements LecVisitor {
                 final int itemId = findItemId(index.sounds(), relativePos);
                 lfExporter.addROL(itemId, lecFile.readChunk(chunk));
             }
-            default -> {
-                throw new IllegalStateException("Unknown chunk: " + chunk);
-            }
+            default -> throw new IllegalStateException("Unknown chunk: " + chunk);
         }
+
+        StatusInfo.success();
 
         return true;
     }

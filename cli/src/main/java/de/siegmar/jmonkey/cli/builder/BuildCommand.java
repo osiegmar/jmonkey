@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.siegmar.jmonkey.cli.RoomDisk;
 import de.siegmar.jmonkey.cli.RoomInfo;
 import de.siegmar.jmonkey.cli.RoomMeta;
+import de.siegmar.jmonkey.cli.StatusInfo;
 import de.siegmar.jmonkey.encoder.index.IndexBuilder;
 import de.siegmar.jmonkey.encoder.index.IndexWriter;
 import picocli.CommandLine;
@@ -83,6 +84,7 @@ public class BuildCommand implements Runnable {
 
             // Build LFL files
             final List<LflFile> lflFiles = new ArrayList<>();
+            StatusInfo.status("Build rooms");
             for (final Path roomDir : roomDirs) {
                 final Path roomMetaFile = roomDir.resolve("room.json");
 
@@ -90,10 +92,12 @@ public class BuildCommand implements Runnable {
                     final RoomMeta roomMeta = new ObjectMapper().readValue(roomMetaFile.toFile(), RoomMeta.class);
                     final Path lflFile = outputDir.resolve("%03d.LFL".formatted(roomMeta.roomId()));
 
-                    System.out.println("Build LFL file " + lflFile);
+                    StatusInfo.status("Build LFL file %s", lflFile);
                     lflFiles.add(new LflBuilder(roomMeta, roomDir, indexBuilder, lflFile).buildLFLFile());
+                    StatusInfo.success();
                 }
             }
+            StatusInfo.success();
 
             final RoomInfo roomInfo = new ObjectMapper()
                 .readValue(inputDir.resolve("room_info.json").toFile(), RoomInfo.class);
@@ -110,18 +114,15 @@ public class BuildCommand implements Runnable {
 
             // Create index file
             final Path indexFile = outputDir.resolve("000.LFL");
-            System.out.println("Build Index file " + indexFile);
             IndexWriter.writeIndex(indexBuilder.build(), indexFile);
 
             // Copy font files
-            System.out.println("Copy font files");
             copyFiles(Files.list(inputDir.resolve("fonts")).toList(), outputDir);
 
             final Path amigasoundDir = inputDir.resolve("amigasound");
             final List<Path> amigaSoundFiles = Files.exists(amigasoundDir)
                 ? Files.list(inputDir.resolve("amigasound")).toList() : List.of();
             if (!amigaSoundFiles.isEmpty()) {
-                System.out.println("Copy amiga sound files");
                 copyFiles(amigaSoundFiles, outputDir);
             }
         } catch (final IOException e) {
@@ -133,8 +134,9 @@ public class BuildCommand implements Runnable {
         Files.createDirectories(target);
         files.forEach(file -> {
             try {
-                System.out.println("Copy " + file);
+                StatusInfo.status("Copy %s", file);
                 Files.copy(file, target.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                StatusInfo.success();
             } catch (final IOException e) {
                 throw new UncheckedIOException(e);
             }

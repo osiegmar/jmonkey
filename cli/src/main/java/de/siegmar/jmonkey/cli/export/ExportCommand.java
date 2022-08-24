@@ -18,8 +18,6 @@
 
 package de.siegmar.jmonkey.cli.export;
 
-import static picocli.CommandLine.Help.Ansi.AUTO;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -32,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.siegmar.jmonkey.cli.RoomDisk;
 import de.siegmar.jmonkey.cli.RoomInfo;
+import de.siegmar.jmonkey.cli.StatusInfo;
 import de.siegmar.jmonkey.commons.misc.GameDir;
 import de.siegmar.jmonkey.index.Index;
 import de.siegmar.jmonkey.index.IndexReader;
@@ -81,9 +80,13 @@ public class ExportCommand implements Runnable {
         try {
             final GameDir gameDir = new GameDir(inputDir);
 
+//            StatusInfo.status("Export game");
+
             final Path indexfile = gameDir.provideIndexFile();
-            System.out.println("Read index from " + indexfile);
+
+            StatusInfo.status("Read index");
             final Index index = IndexReader.readFile(indexfile);
+            StatusInfo.success();
 
             // As the index sometimes references non-existing chunks (for unused resource IDs)
             // we have to traverse over the actual data.
@@ -92,38 +95,44 @@ public class ExportCommand implements Runnable {
 
             final List<Path> lecFiles = gameDir.provideLecFiles().sorted().toList();
             for (final Path lecFile : lecFiles) {
-                System.out.println("Export data from " + lecFile);
+                StatusInfo.status("Export %s", lecFile);
 
                 final ExportVisitor lecVisitor = new ExportVisitor(outputDir, index);
                 LecScanner.scan(lecFile, lecVisitor);
                 roomDisks.add(new RoomDisk(lecVisitor.getRoomIds()));
+
+                StatusInfo.success();
             }
 
             final RoomInfo roomInfo = new RoomInfo(roomDisks);
             new ObjectMapper().writer().withDefaultPrettyPrinter().writeValue(
                 outputDir.resolve("room_info.json").toFile(), roomInfo);
 
-            System.out.println("Copy font files");
+            StatusInfo.status("Copy font files");
             copyFiles(gameDir.provideFontFiles().toList(), outputDir.resolve("fonts"));
+            StatusInfo.success();
 
             final List<Path> amigaSoundFiles = gameDir.provideAmigaSoundFiles().toList();
             if (!amigaSoundFiles.isEmpty()) {
-                System.out.println("Copy amiga sound files");
+                StatusInfo.status("Copy amiga sound files");
                 copyFiles(amigaSoundFiles, outputDir.resolve("amigasound"));
+                StatusInfo.success();
             }
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
 
-        System.out.printf(AUTO.string("@|bold,green Game successfully exported to '%s'%n|@"), outputDir);
+//        StatusInfo.success();
+//        System.out.printf(AUTO.string("@|bold,green Game successfully exported to '%s'%n|@"), outputDir);
     }
 
     private void copyFiles(final List<Path> files, final Path target) throws IOException {
         Files.createDirectories(target);
         files.forEach(file -> {
             try {
-                System.out.println("Copy " + file);
+                StatusInfo.status("Copy %s", file);
                 Files.copy(file, target.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                StatusInfo.success();
             } catch (final IOException e) {
                 throw new UncheckedIOException(e);
             }
