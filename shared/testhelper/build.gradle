@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':shared:commons')
+    implementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
+}

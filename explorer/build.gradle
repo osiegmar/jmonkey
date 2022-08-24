@@ -1,0 +1,27 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+}
+
+application {
+    mainModule = 'de.siegmar.jmonkey.explorer'
+    mainClass = 'de.siegmar.jmonkey.explorer.MonkeyExplorer'
+}
+
+javafx {
+    version = '17'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    implementation project(':shared:commons')
+    implementation project(':shared:index')
+    implementation project(':shared:lecscanner')
+    implementation project(':shared:decoder')
+    implementation project(':shared:datarepository')
+    implementation project(':shared:font')
+}
+
+test {
+    useJUnitPlatform()
+}

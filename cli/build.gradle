@@ -1,0 +1,20 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':shared:commons')
+    implementation project(':shared:index')
+    implementation project(':shared:lecscanner')
+    implementation project(':shared:decoder')
+    implementation project(':shared:encoder')
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation 'info.picocli:picocli:4.6.3'
+}
+
+application {
+    mainModule = 'de.siegmar.jmonkey.cli'
+    mainClass = 'de.siegmar.jmonkey.cli.Cli'
+    applicationName = 'monkey-cli'
+    executableDir = ''
+}

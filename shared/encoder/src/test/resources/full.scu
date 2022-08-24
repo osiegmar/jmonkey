@@ -1,0 +1,47 @@
+// unconditional goto backward
+/* 0x80 */ label0: breakHere();
+/* 0x18 */ goto label0;
+
+// unconditional goto forward
+/* 0x18 */ goto label1;
+/* 0x80 */ label1: breakHere();
+
+// Unary backward
+/* 0x28, 0xA8 */ unless (Var[100]) goto label1;
+
+// Unary NOT forward
+/* 0x28, 0xA8 */ unless (!Var[100]) goto label2;
+/* 0x80 */ label2: breakHere();
+
+// Binary backward
+/* 0x44 */ unless (Var[100] > 5) goto label2;
+/* 0x78 */ unless (Bit[100] < 5) goto label2;
+/* 0x78 */ unless (Var[100] < -100) goto label2;
+/* 0x48 */ unless (Var[100] == 5) goto label2;
+/* 0x08 */ unless (Var[100] != 5) goto label2;
+/* 0x38 */ unless (Local[5] >= 5) goto label2;
+/* 0x04 */ unless (Local[5] <= 5) goto label2;
+
+// Binary forward
+/* 0x44 */ unless (Var[100] > 5) goto label3;
+/* 0x78 */ unless (Bit[100] < 5) goto label3;
+/* 0x48 */ unless (Var[100] == 5) goto label3;
+/* 0x08 */ unless (Var[100] != 5) goto label3;
+/* 0x38 */ unless (Local[5] >= 5) goto label3;
+/* 0x04 */ unless (Local[5] <= 5) goto label3;
+/* 0x80 */ label3: breakHere();
+
+// getState backward
+/* 0x0F */ unless (getState(401) == 0) goto label0;
+
+// getState forward
+/* 0x0F */ unless (getState(401) != 1) goto label4;
+/* 0x80 */ label4: breakHere();
+
+// classOfIs backward
+/* 0x1D */ unless (classOfIs(1, listOf(2))) goto label0;
+/* 0x1D */ unless (classOfIs(Local[0], listOf(146))) goto label0;
+
+// classOfIs forward
+/* 0x1D */ unless (classOfIs(Local[0], listOf(146))) goto label5;
+/* 0x80 */ label5: breakHere();

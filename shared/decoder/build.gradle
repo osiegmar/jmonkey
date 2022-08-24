@@ -1,0 +1,38 @@
+dependencies {
+    implementation project(':shared:commons')
+    testImplementation project(':shared:testhelper')
+    testImplementation project(':shared:lecscanner')
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += sourceSets.main.output
+            runtimeClasspath += sourceSets.main.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
+
+integrationTest.onlyIf { System.getenv('MONKEY_TEST_BASE') != null }

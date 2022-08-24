@@ -1,0 +1,11 @@
+dependencies {
+    implementation project(':shared:commons')
+    implementation project(':shared:index')
+    implementation project(':shared:decoder')
+    testImplementation project(':shared:testhelper')
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}

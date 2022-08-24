@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ufwb version="1.17">
+    <grammar name="Index" start="id:1" author="Oliver Siegmar" email="oliver@siegmar.de" fileextension="lfl" uti="public.data" complete="yes">
+        <description>Grammar for 000.LFL index data file. See https://osiegmar.github.io/jmonkey/file-formats/index-file/ for details.</description>
+        <scripts>
+            <script name="RoomName" type="DataType" id="79">
+                <source language="Python">def parseByteRange(element, byteView, bitPos, bitLength, results):
+    name = &quot;&quot;
+
+    bytePos = bitPos // 8
+
+    for i in range(8):
+        val = 0xFF ^ byteView.readByte(bytePos + i)
+        if (val == 0):
+            break
+        name += chr(val)
+
+    stringValue = Value()
+    stringValue.setString(name)
+
+    results.addElement(element, len(name), 0, stringValue)
+
+    return 9
+
+def fillByteRange(value, byteArray, bitPos, bitLength):
+    startPos = bitPos // 8
+
+    str = value.getString()
+
+    for i in range(8):
+        ch = ord(str[i]) if i &lt; len(str) else 0
+        byteArray.replaceByte(startPos + i, ch ^ 0xFF)
+</source>
+            </script>
+        </scripts>
+        <structure name="Index" id="1" encoding="ISO_8859-1:1987" endian="little" signed="no">
+            <structure name="RoomNames" id="2">
+                <description>RN chunk</description>
+                <number name="Length" id="3" fillcolor="00F900" type="integer" length="4"/>
+                <string name="Type" mustmatch="yes" id="4" fillcolor="FEFB00" type="fixed-length" length="2">
+                    <fixedvalues>
+                        <fixedvalue name="roomName" value="RN"/>
+                    </fixedvalues>
+                </string>
+                <structure name="Items" id="5" length="0" repeatmax="(Length - 7) / 10">
+                    <number name="RoomId" id="6" type="integer" length="1"/>
+                    <custom name="Name" id="7" length="9" script="id:79"/>
+                </structure>
+                <binary name="END" mustmatch="yes" id="9" length="1">
+                    <fixedvalues>
+                        <fixedvalue name="NUL" value="00"/>
+                    </fixedvalues>
+                </binary>
+            </structure>
+            <structure name="RoomDirectory" id="11">
+                <description>0R chunk</description>
+                <number name="Length" id="12" fillcolor="00F900" type="integer" length="4"/>
+                <string name="Type" mustmatch="yes" id="13" fillcolor="FEFB00" type="fixed-length" length="2">
+                    <fixedvalues>
+                        <fixedvalue name="room" value="0R"/>
+                    </fixedvalues>
+                </string>
+                <number name="ItemCnt" id="14" type="integer" length="2"/>
+                <structure name="Items" id="15" repeat="id:14" repeatmax="-1">
+                    <number name="FileNo" id="16" type="integer" length="1"/>
+                    <number name="FileOffset" id="17" type="integer" length="4">
+                        <fixedvalues>
+                            <fixedvalue name="unused" value="0"/>
+                        </fixedvalues>
+                    </number>
+                </structure>
+            </structure>
+            <structref name="ScriptDirectory" id="21" structure="id:20"/>
+            <structref name="SoundDirectory" id="22" structure="id:20"/>
+            <structref name="CostumeDirectory" id="23" structure="id:20"/>
+            <structure name="ObjectDirectory" id="24">
+                <description>0O chunk</description>
+                <number name="Length" id="25" fillcolor="00F900" type="integer" length="4"/>
+                <string name="Type" mustmatch="yes" id="26" fillcolor="FEFB00" type="fixed-length" length="2">
+                    <fixedvalues>
+                        <fixedvalue name="object" value="0O"/>
+                    </fixedvalues>
+                </string>
+                <number name="ItemCnt" id="27" type="integer" length="2"/>
+                <structure name="Items" id="28" repeat="id:27" repeatmax="-1">
+                    <number name="Classdata" id="29" type="integer" length="24" lengthunit="bit" display="binary">
+                        <mask name="bit24" value="0x800000">
+                            <fixedvalue name="bit" value="0x800000"/>
+                        </mask>
+                        <mask name="bit18" value="0x20000">
+                            <fixedvalue name="bit" value="0x20000"/>
+                        </mask>
+                        <mask name="bit16" value="0x8000">
+                            <fixedvalue name="bit" value="0x8000"/>
+                        </mask>
+                        <mask name="bit15" value="0x4000">
+                            <fixedvalue name="bit" value="0x4000"/>
+                        </mask>
+                        <mask name="bit14" value="0x2000">
+                            <fixedvalue name="bit" value="0x2000"/>
+                        </mask>
+                        <mask name="bit13" value="0x1000">
+                            <fixedvalue name="bit" value="0x1000"/>
+                        </mask>
+                        <mask name="bit12" value="0x800">
+                            <fixedvalue name="bit" value="0x800"/>
+                        </mask>
+                        <mask name="bit10" value="0x200">
+                            <fixedvalue name="bit" value="0x200"/>
+                        </mask>
+                        <mask name="bit8" value="0x80">
+                            <fixedvalue name="bit" value="0x80"/>
+                        </mask>
+                        <mask name="bit7" value="0x40">
+                            <fixedvalue name="bit" value="0x40"/>
+                        </mask>
+                        <mask name="bit6" value="0x20">
+                            <fixedvalue name="bit" value="0x20"/>
+                        </mask>
+                        <mask name="bit5" value="0x10">
+                            <fixedvalue name="bit" value="0x10"/>
+                        </mask>
+                        <mask name="bit3" value="0x4">
+                            <fixedvalue name="bit" value="0x4"/>
+                        </mask>
+                        <mask name="bit2" value="0x2">
+                            <fixedvalue name="bit" value="0x2"/>
+                        </mask>
+                        <mask name="bit1" value="0x1">
+                            <fixedvalue name="bit" value="0x1"/>
+                        </mask>
+                    </number>
+                    <number name="State" id="30" type="integer" length="4" lengthunit="bit">
+                        <fixedvalues>
+                            <fixedvalue name="&lt;unnamed&gt;" value="0"/>
+                            <fixedvalue name="&lt;unnamed&gt;" value="1"/>
+                        </fixedvalues>
+                    </number>
+                    <number name="Owner" id="31" type="integer" length="4" lengthunit="bit">
+                        <fixedvalues>
+                            <fixedvalue name="&lt;unnamed&gt;" value="0"/>
+                            <fixedvalue name="&lt;unnamed&gt;" value="15"/>
+                        </fixedvalues>
+                    </number>
+                </structure>
+            </structure>
+        </structure>
+        <structure name="ResourceDirectory" id="20" encoding="ISO_8859-1:1987" endian="little" signed="no">
+            <number name="Length" id="35" fillcolor="00F900" type="integer" length="4"/>
+            <string name="Type" mustmatch="yes" id="36" fillcolor="FEFB00" type="fixed-length" length="2">
+                <fixedvalues>
+                    <fixedvalue name="script" value="0S"/>
+                    <fixedvalue name="sound" value="0N"/>
+                    <fixedvalue name="costume" value="0C"/>
+                </fixedvalues>
+            </string>
+            <number name="ItemCnt" id="37" type="integer" length="2"/>
+            <structure name="RoomRef" id="38" repeat="id:37" repeatmax="-1">
+                <number name="RoomNo" id="39" type="integer" length="1"/>
+                <number name="RoomOffset" id="40" type="integer" length="4" signed="yes"/>
+            </structure>
+        </structure>
+    </grammar>
+</ufwb>

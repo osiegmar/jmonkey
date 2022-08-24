@@ -1,0 +1,60 @@
+plugins {
+    id 'com.github.spotbugs' version '5.0.9' apply false
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'de.siegmar.jmonkey'
+version = '1.0-SNAPSHOT'
+
+subprojects {
+
+    apply plugin: 'com.github.spotbugs'
+    apply plugin: 'pmd'
+    apply plugin: 'checkstyle'
+    apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    spotbugs {
+        excludeFilter = rootProject.file('config/spotbugs/exclude.xml')
+    }
+
+    pmd {
+        consoleOutput = true
+        ruleSets = []
+        ruleSetFiles = rootProject.files('config/pmd/config.xml', 'config/pmd/cli-config.xml')
+    }
+
+    checkstyle {
+        toolVersion '10.3.2'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    test {
+        useJUnitPlatform()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testImplementation(platform('org.junit:junit-bom:5.9.0'))
+        testImplementation('org.junit.jupiter:junit-jupiter')
+        testImplementation('org.assertj:assertj-core:3.23.1')
+    }
+
+}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ JMonkey - Java based development kit for "The Secret of Monkey Island"
+  ~ Copyright (C) 2022  Oliver Siegmar
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<SplitPane dividerPositions="0.43090452261306533" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="824.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.siegmar.jmonkey.explorer.controller.RoomDetailsController">
+   <items>
+      <SplitPane dividerPositions="0.22916666666666666" orientation="VERTICAL" prefHeight="240.0" prefWidth="824.0">
+        <items>
+          <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="40.0" prefWidth="824.0">
+               <children>
+                  <Slider fx:id="imageSizeSlider" blockIncrement="0.5" layoutX="670.0" layoutY="11.0" majorTickUnit="1.0" max="3.0" min="0.5" minorTickCount="1" showTickMarks="true" snapToTicks="true" value="1.0" />
+                  <ChoiceBox fx:id="imageLayers" layoutX="6.0" layoutY="8.0" prefWidth="150.0" />
+                  <Label fx:id="imageDimension" layoutX="359.0" layoutY="11.0" text="Image width / height" />
+               </children>
+            </AnchorPane>
+          <StackPane prefHeight="200.0" prefWidth="824.0">
+             <children>
+                <Group fx:id="imageGroup" />
+             </children>
+          </StackPane>
+        </items>
+      </SplitPane>
+      <Pane prefHeight="118.0" prefWidth="598.0">
+         <children>
+            <TabPane layoutX="6.0" layoutY="4.0" prefHeight="200.0" prefWidth="751.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="Palette">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+
+                              <Label layoutX="63.0" layoutY="23.0" text="Color cycles" />
+                              <ListView fx:id="colorCycles" layoutX="63.0" layoutY="40.0" prefHeight="81.0" prefWidth="129.0" />
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab text="Objects">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+
+                              <Label layoutX="18.0" layoutY="12.0" text="Objects" />
+                              <ListView fx:id="objects" layoutX="18.0" layoutY="29.0" prefHeight="132.0" prefWidth="129.0" />
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                  <Tab text="Boxes">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="169.0" prefWidth="485.0">
+                           <children>
+
+                              <Label layoutX="36.0" layoutY="30.0" text="Walk boxes" />
+                              <ListView fx:id="walkBoxes" layoutX="36.0" layoutY="47.0" prefHeight="81.0" prefWidth="129.0" />
+
+                              <Label layoutX="204.0" layoutY="30.0" text="Scaling slots" />
+                              <ListView fx:id="scalingSlots" layoutX="204.0" layoutY="47.0" prefHeight="81.0" prefWidth="129.0" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </children>
+      </Pane>
+   </items>
+</SplitPane>

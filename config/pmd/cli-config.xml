@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset name="Custom Rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>
+        My custom rules
+    </description>
+
+    <exclude-pattern>.*</exclude-pattern>
+    <include-pattern>.*/de/siegmar/jmonkey/cli/.*</include-pattern>
+
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="JUnitAssertionsShouldIncludeMessage"/>
+        <exclude name="JUnitTestContainsTooManyAsserts"/>
+        <exclude name="UseVarargs"/>
+        <exclude name="GuardLogStatement"/>
+
+        <!-- https://github.com/pmd/pmd/issues/2806 -->
+        <exclude name="SwitchStmtsShouldHaveDefault"/>
+        <exclude name="SystemPrintln" />
+    </rule>
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="AssignmentInOperand"/>
+    </rule>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+
+</ruleset>

@@ -1,0 +1,57 @@
+%YAML 1.2
+---
+name: SCUMM
+file_extensions: [scu]
+scope: source.scumm
+version: 2
+
+variables:
+  ident: '[A-Za-z_][A-Za-z_0-9]*'
+contexts:
+  main:
+    - match: \b(goto)\b
+      scope: keyword.control.flow.scumm
+    - match: \b(unless)\b
+      scope: keyword.control.conditional.scumm
+    - match: '[A-Za-z_][A-Za-z_0-9]*:'
+      scope: variable.language.scumm
+    - match: \b[0-9]+\b
+      scope: constant.numeric.scumm
+    - match: '>=|<=|>|<'
+      scope: keyword.operator.scumm
+    - match: '\+=|-=|='
+      scope: keyword.operator.assignment.scumm
+    - match: '\+|-'
+      scope: keyword.operator.arithmetic.scumm
+    - match: '"'
+      push: string
+    - match: '//'
+      scope: punctuation.definition.comment.scumm
+      push: line_comment
+    - match: '/\*'
+      scope: punctuation.definition.comment.scumm
+      push: multiline_comment
+    - match: (?=\b[[:alpha:]_][[:alnum:]_]*\b\()
+      push: function-call
+    - match: '\b{{ident}}\b'
+      scope: variable.other.scumm
+
+  string:
+    - meta_scope: string.quoted.double.scumm
+    - match: \\.
+      scope: constant.character.escape.scumm
+    - match: '"'
+      pop: true
+  line_comment:
+    - meta_scope: comment.line.scumm
+    - match: $
+      pop: true
+  multiline_comment:
+    - meta_scope: comment.block.scumm
+    - match: '\*/'
+      pop: true
+  function-call:
+    - match: \b[[:alpha:]_][[:alnum:]_]*\b
+      scope: variable.function.scumm
+    - match: \(
+      pop: 1
