@@ -19,6 +19,9 @@
 package de.siegmar.jmonkey.encoder.script;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,38 +29,62 @@ class ScummStringEncoderTest {
 
     @Test
     void simple() {
-        assertThat(ScummStringEncoder.encode("foo", false).dumpCopy())
-            .isEqualTo(new byte[]{'f', 'o', 'o', 0x00});
+        final String actual = "foo";
+        final String expected = "foo$00";
+        assertThis(actual, expected, false);
     }
 
     @Test
     void newline() {
-        assertThat(ScummStringEncoder.encode("a{newline}b", false).dumpCopy())
-            .isEqualTo(new byte[]{'a', -0x02, 0x01, 'b', 0x00});
+        final String actual = "a{newline}b";
+        final String expected = "a$FE$01b$00";
+        assertThis(actual, expected, false);
     }
 
     @Test
     void keepText() {
-        assertThat(ScummStringEncoder.encode("a{keepText}b", false).dumpCopy())
-            .isEqualTo(new byte[]{'a', -0x01, 0x02, 'b', 0x00});
+        final String actual = "a{keepText}b";
+        final String expected = "a$FF$02b$00";
+        assertThis(actual, expected, false);
     }
 
     @Test
     void sleep() {
-        assertThat(ScummStringEncoder.encode("a{sleep}b", false).dumpCopy())
-            .isEqualTo(new byte[]{'a', -0x01, 0x03, 'b', 0x00});
+        final String actual = "a{sleep}b";
+        final String expected = "a$FF$03b$00";
+        assertThis(actual, expected, false);
     }
 
     @Test
     void verbNewline() {
-        assertThat(ScummStringEncoder.encode("a{verbNewline}b", false).dumpCopy())
-            .isEqualTo(new byte[]{'a', -0x02, 0x08, 'b', 0x00});
+        final String actual = "a{verbNewline}b";
+        final String expected = "a$FE$08b$00";
+        assertThis(actual, expected, false);
     }
 
     @Test
     void getInt() {
-        assertThat(ScummStringEncoder.encode("a{int(Var[308])}b", false).dumpCopy())
+        final String actual = "a{int(Var[308])}b";
+        assertThat(ScummStringEncoder.encode(actual, false).dumpCopy())
             .isEqualTo(new byte[]{'a', -0x01, 0x04, 308 & 0xFF, 308 >> 8, 'b', 0x00});
+    }
+
+    void assertThis(final String actual, final String expected, final boolean print) {
+        final String vActual = visualize(ScummStringEncoder.encode(actual, print).dumpCopy());
+        final String vExpected = visualize(expected.getBytes(StandardCharsets.UTF_8));
+        assertEquals(vExpected, vActual);
+    }
+
+    String visualize(final byte[] data) {
+        final StringBuilder sb = new StringBuilder();
+        for (final byte b : data) {
+            if (b > 31) {
+                sb.append((char) b);
+            } else {
+                sb.append("$%02X".formatted(b));
+            }
+        }
+        return sb.toString();
     }
 
 }
