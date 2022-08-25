@@ -438,7 +438,7 @@ public class ScummCompiler {
             } else if ("text".equals(name)) {
                 final int subOpcode = 0x0F;
                 bsb.appendU8(subOpcode);
-                bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) rightExpression).getValue(), true));
+                bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) rightExpression).getValue()));
                 endedWithText = true;
             } else {
                 throw new IllegalStateException("Unknown argument: " + argument);
@@ -472,7 +472,7 @@ public class ScummCompiler {
             if ("text".equals(name)) {
                 final int subOpcode = 0x02;
                 bsb.appendU8(subOpcode);
-                bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) rightExpression).getValue(), false));
+                bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) rightExpression).getValue()));
             } else if ("color".equals(name)) {
                 final ByteStringBuilder namedArgBuilder = new ByteStringBuilder();
                 int subOpcode = 0x03;
@@ -673,7 +673,7 @@ public class ScummCompiler {
                 final int subOpcode = 0x0F;
                 bsb.appendU8(subOpcode);
                 bsb.append(
-                    ScummStringEncoder.encode(((StringLiteralExpression) argument.getRight()).getValue(), false));
+                    ScummStringEncoder.encode(((StringLiteralExpression) argument.getRight()).getValue()));
             } else if ("initAnimNr".equals(name)) {
                 final ByteStringBuilder namedArgBuilder = new ByteStringBuilder();
                 int subOpcode = 0x10;
@@ -1254,7 +1254,7 @@ public class ScummCompiler {
         opcode |= appendParameter16(arguments, 0, paramBuilder);
         bsb.appendU8(opcode);
         bsb.append(paramBuilder.build());
-        bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) arguments.get(1)).getValue(), false));
+        bsb.append(ScummStringEncoder.encode(((StringLiteralExpression) arguments.get(1)).getValue()));
     }
 
     private void chainScript(final List<Expression> arguments) {
@@ -1329,7 +1329,7 @@ public class ScummCompiler {
         bsb.append(paramBuilder.build());
 
         final StringLiteralExpression str = (StringLiteralExpression) arguments.get(1);
-        bsb.append(ScummStringEncoder.encode(str.getValue(), false));
+        bsb.append(ScummStringEncoder.encode(str.getValue()));
     }
 
     private void getStringChar(final AssignmentExpression arguments) {

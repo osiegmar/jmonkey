@@ -55,6 +55,10 @@ public class ScummString {
 
     }
 
+    public static class NewLinePart2 implements StringPart {
+
+    }
+
     public static class VerbNewLinePart implements StringPart {
 
     }
@@ -154,6 +158,10 @@ public class ScummString {
 
         public void newline() {
             parts.add(new NewLinePart());
+        }
+
+        public void newline2() {
+            parts.add(new NewLinePart2());
         }
 
         public void keepText() {

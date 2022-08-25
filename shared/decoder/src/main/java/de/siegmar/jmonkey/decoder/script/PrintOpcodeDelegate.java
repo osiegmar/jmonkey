@@ -634,6 +634,8 @@ public class PrintOpcodeDelegate implements OpcodeDelegate {
         for (final ScummString.StringPart part : ss.getParts()) {
             if (part instanceof ScummString.NewLinePart) {
                 sb.append("{newline}");
+            } else if (part instanceof ScummString.NewLinePart2) {
+                sb.append("{newline2}");
             } else if (part instanceof ScummString.VerbNewLinePart) {
                 sb.append("{verbNewline}");
             } else if (part instanceof ScummString.KeepTextPart) {

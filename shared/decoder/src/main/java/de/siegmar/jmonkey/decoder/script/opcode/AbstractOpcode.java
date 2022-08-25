@@ -106,22 +106,33 @@ public abstract class AbstractOpcode implements Opcode {
         int cmd;
 
         while ((cmd = bb.readU8()) != 0) {
-            if (cmd == 0xFF || cmd == 0xFE) {
+            if (cmd == 0xFE || cmd == 0xFF) {
                 if (bos.size() > 0) {
                     ssb.text(bos.toByteArray(), bos.toString(CHARSET));
                     bos.reset();
                 }
                 final int opcode = bb.readU8();
-                switch (opcode) {
-                    case 1 -> ssb.newline();
-                    case 2 -> ssb.keepText();
-                    case 3 -> ssb.sleep();
-                    case 4 -> ssb.getInt(resolvePointer(bb));
-                    case 5 -> ssb.getVerb(resolvePointer(bb));
-                    case 6 -> ssb.getName(resolvePointer(bb));
-                    case 7 -> ssb.getString(resolvePointer(bb));
-                    case 8 -> ssb.verbNewline();
-                    default -> throw new IllegalStateException("opcode not found: %X".formatted(opcode));
+
+                // I have no idea what's the difference between 0xFE and 0xFF
+                // Keep the information to later re-compile the same bytecodes
+
+                if (cmd == 0xFE) {
+                    switch (opcode) {
+                        case 1 -> ssb.newline2();
+                        case 8 -> ssb.verbNewline();
+                        default -> throw new IllegalStateException("opcode not found: %X".formatted(opcode));
+                    }
+                } else {
+                    switch (opcode) {
+                        case 1 -> ssb.newline();
+                        case 2 -> ssb.keepText();
+                        case 3 -> ssb.sleep();
+                        case 4 -> ssb.getInt(resolvePointer(bb));
+                        case 5 -> ssb.getVerb(resolvePointer(bb));
+                        case 6 -> ssb.getName(resolvePointer(bb));
+                        case 7 -> ssb.getString(resolvePointer(bb));
+                        default -> throw new IllegalStateException("opcode not found: %X".formatted(opcode));
+                    }
                 }
             } else {
                 bos.write((byte) cmd);

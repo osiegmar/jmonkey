@@ -39,7 +39,7 @@ public final class ScummStringEncoder {
     private ScummStringEncoder() {
     }
 
-    public static ByteString encode(final String str, final boolean print) {
+    public static ByteString encode(final String str) {
         final ByteStringBuilder bsb = new ByteStringBuilder();
 
         final StringBuilder sb = new StringBuilder();
@@ -60,7 +60,10 @@ public final class ScummStringEncoder {
                     ByteString ptr = null;
 
                     if ("newline".equals(fnc)) {
-                        marker = print ? 0xFF : 0xFE;
+                        marker = 0xFF;
+                        opcode = 1;
+                    } else if ("newline2".equals(fnc)) {
+                        marker = 0xFE;
                         opcode = 1;
                     } else if ("keepText".equals(fnc)) {
                         marker = 0xFF;

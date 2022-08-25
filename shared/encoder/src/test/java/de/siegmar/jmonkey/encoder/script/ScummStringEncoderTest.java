@@ -31,46 +31,53 @@ class ScummStringEncoderTest {
     void simple() {
         final String actual = "foo";
         final String expected = "foo$00";
-        assertThis(actual, expected, false);
+        assertThis(actual, expected);
     }
 
     @Test
     void newline() {
         final String actual = "a{newline}b";
+        final String expected = "a$FF$01b$00";
+        assertThis(actual, expected);
+    }
+
+    @Test
+    void newline2() {
+        final String actual = "a{newline2}b";
         final String expected = "a$FE$01b$00";
-        assertThis(actual, expected, false);
+        assertThis(actual, expected);
     }
 
     @Test
     void keepText() {
         final String actual = "a{keepText}b";
         final String expected = "a$FF$02b$00";
-        assertThis(actual, expected, false);
+        assertThis(actual, expected);
     }
 
     @Test
     void sleep() {
         final String actual = "a{sleep}b";
         final String expected = "a$FF$03b$00";
-        assertThis(actual, expected, false);
+        assertThis(actual, expected);
     }
 
     @Test
     void verbNewline() {
         final String actual = "a{verbNewline}b";
         final String expected = "a$FE$08b$00";
-        assertThis(actual, expected, false);
+        assertThis(actual, expected);
     }
 
     @Test
     void getInt() {
         final String actual = "a{int(Var[308])}b";
-        assertThat(ScummStringEncoder.encode(actual, false).dumpCopy())
+        assertThat(ScummStringEncoder.encode(actual).dumpCopy())
             .isEqualTo(new byte[]{'a', -0x01, 0x04, 308 & 0xFF, 308 >> 8, 'b', 0x00});
     }
 
-    void assertThis(final String actual, final String expected, final boolean print) {
-        final String vActual = visualize(ScummStringEncoder.encode(actual, print).dumpCopy());
+    void assertThis(final String actual, final String expected) {
+        final String vActual = visualize(ScummStringEncoder.encode(actual).dumpCopy());
         final String vExpected = visualize(expected.getBytes(StandardCharsets.UTF_8));
         assertEquals(vExpected, vActual);
     }

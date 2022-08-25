@@ -660,6 +660,8 @@ public class ScummVMPrintOpcodeDelegate implements OpcodeDelegate {
         for (final ScummString.StringPart part : ss.getParts()) {
             if (part instanceof ScummString.NewLinePart) {
                 parts.add(sprintM("newline"));
+            } else if (part instanceof ScummString.NewLinePart2) {
+                parts.add(sprintM("newline"));
             } else if (part instanceof ScummString.VerbNewLinePart) {
                 parts.add(sprintM("verbNewline"));
             } else if (part instanceof ScummString.KeepTextPart) {

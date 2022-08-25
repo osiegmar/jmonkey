@@ -76,57 +76,77 @@ public class BuildCommand implements Runnable {
 
     @Override
     public void run() {
+        final IndexBuilder indexBuilder = new IndexBuilder();
+
         try {
             final List<Path> roomDirs = Files.list(inputDir.resolve("rooms"))
                 .toList();
 
-            final IndexBuilder indexBuilder = new IndexBuilder();
-
-            // Build LFL files
-            final List<LflFile> lflFiles = new ArrayList<>();
-            StatusInfo.status("Build rooms");
-            for (final Path roomDir : roomDirs) {
-                final Path roomMetaFile = roomDir.resolve("room.json");
-
-                if (Files.exists(roomMetaFile)) {
-                    final RoomMeta roomMeta = new ObjectMapper().readValue(roomMetaFile.toFile(), RoomMeta.class);
-                    final Path lflFile = outputDir.resolve("%03d.LFL".formatted(roomMeta.roomId()));
-
-                    StatusInfo.status("Build LFL file %s", lflFile);
-                    lflFiles.add(new LflBuilder(roomMeta, roomDir, indexBuilder, lflFile).buildLFLFile());
-                    StatusInfo.success();
-                }
-            }
-            StatusInfo.success();
-
-            final RoomInfo roomInfo = new ObjectMapper()
-                .readValue(inputDir.resolve("room_info.json").toFile(), RoomInfo.class);
-
-            final List<RoomDisk> roomDisks = roomInfo.roomDisks();
-            for (int i = 0; i < roomDisks.size(); i++) {
-                final List<LflFile> fileRooms = roomDisks.get(i).roomIds().stream()
-                    .map(roomId -> lflFiles.stream().filter(l -> l.roomId() == roomId).findFirst().orElseThrow())
-                    .toList();
-
-                final int fileNo = i + 1;
-                LecBuilder.buildLecFile(fileRooms, indexBuilder, outputDir, fileNo);
-            }
-
-            // Create index file
-            final Path indexFile = outputDir.resolve("000.LFL");
-            IndexWriter.writeIndex(indexBuilder.build(), indexFile);
-
-            // Copy font files
-            copyFiles(Files.list(inputDir.resolve("fonts")).toList(), outputDir);
-
-            final Path amigasoundDir = inputDir.resolve("amigasound");
-            final List<Path> amigaSoundFiles = Files.exists(amigasoundDir)
-                ? Files.list(inputDir.resolve("amigasound")).toList() : List.of();
-            if (!amigaSoundFiles.isEmpty()) {
-                copyFiles(amigaSoundFiles, outputDir);
-            }
+            final List<LflFile> lflFiles = buildLflFiles(indexBuilder, roomDirs);
+            buildLecFiles(indexBuilder, lflFiles);
+            createIndex(indexBuilder);
+            copyFonts();
+            copyAmigaSounds();
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private List<LflFile> buildLflFiles(final IndexBuilder indexBuilder, final List<Path> roomDirs) throws IOException {
+        final List<LflFile> lflFiles = new ArrayList<>();
+        StatusInfo.status("Build rooms");
+        for (final Path roomDir : roomDirs) {
+            final Path roomMetaFile = roomDir.resolve("room.json");
+
+            if (Files.exists(roomMetaFile)) {
+                final RoomMeta roomMeta = new ObjectMapper().readValue(roomMetaFile.toFile(), RoomMeta.class);
+                final Path lflFile = outputDir.resolve("%03d.LFL".formatted(roomMeta.roomId()));
+
+                StatusInfo.status("Build LFL file %s", lflFile);
+                lflFiles.add(new LflBuilder(roomMeta, roomDir, indexBuilder, lflFile).buildLFLFile());
+                StatusInfo.success();
+            }
+        }
+        StatusInfo.success();
+        return lflFiles;
+    }
+
+    private void buildLecFiles(final IndexBuilder indexBuilder, final List<LflFile> lflFiles) throws IOException {
+        final RoomInfo roomInfo = new ObjectMapper()
+            .readValue(inputDir.resolve("room_info.json").toFile(), RoomInfo.class);
+
+        final List<RoomDisk> roomDisks = roomInfo.roomDisks();
+        for (int i = 0; i < roomDisks.size(); i++) {
+            final List<LflFile> fileRooms = roomDisks.get(i).roomIds().stream()
+                .map(roomId -> lflFiles.stream().filter(l -> l.roomId() == roomId).findFirst().orElseThrow())
+                .toList();
+
+            final int fileNo = i + 1;
+            LecBuilder.buildLecFile(fileRooms, indexBuilder, outputDir, fileNo);
+        }
+    }
+
+    private void createIndex(final IndexBuilder indexBuilder) throws IOException {
+        StatusInfo.status("Build index");
+        final Path indexFile = outputDir.resolve("000.LFL");
+        IndexWriter.writeIndex(indexBuilder.build(), indexFile);
+        StatusInfo.success();
+    }
+
+    private void copyFonts() throws IOException {
+        StatusInfo.status("Copy fonts");
+        copyFiles(Files.list(inputDir.resolve("fonts")).toList(), outputDir);
+        StatusInfo.success();
+    }
+
+    private void copyAmigaSounds() throws IOException {
+        final Path amigaSoundDir = inputDir.resolve("amigasound");
+        final List<Path> amigaSoundFiles = Files.exists(amigaSoundDir)
+            ? Files.list(inputDir.resolve("amigasound")).toList() : List.of();
+        if (!amigaSoundFiles.isEmpty()) {
+            StatusInfo.status("Copy amiga sounds");
+            copyFiles(amigaSoundFiles, outputDir);
+            StatusInfo.success();
         }
     }
 
