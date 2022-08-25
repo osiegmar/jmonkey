@@ -18,7 +18,7 @@
 
 package de.siegmar.jmonkey.encoder.script;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;

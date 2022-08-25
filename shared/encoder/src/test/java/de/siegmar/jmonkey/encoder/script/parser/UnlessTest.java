@@ -16,39 +16,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import de.siegmar.jmonkey.encoder.script.parser.statement.CallExpression;
-import de.siegmar.jmonkey.encoder.script.parser.statement.ExpressionStatement;
+import de.siegmar.jmonkey.encoder.script.parser.statement.BinaryExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.GotoStatement;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Identifier;
-import de.siegmar.jmonkey.encoder.script.parser.statement.LabeledStatement;
+import de.siegmar.jmonkey.encoder.script.parser.statement.NumericLiteralExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
+import de.siegmar.jmonkey.encoder.script.parser.statement.UnlessStatement;
 
-class LabelTest {
+class UnlessTest {
 
     @Test
     void simpleUnless() {
-        final String program = """
-            label0: print();
-            goto label0;
-            """;
+        final String program = "unless (x) goto foo;";
         final Program expected = Program.of(List.of(
-            LabeledStatement.of(
-                Identifier.of("label0"),
-                ExpressionStatement.of(
-                    CallExpression.of(Identifier.of("print"), null)
-                )
-            ),
-            GotoStatement.of(Identifier.of("label0"))));
+            UnlessStatement.of(
+                Identifier.of("x"),
+                GotoStatement.of(Identifier.of("foo"))
+            )));
+
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void comparatorUnless() {
+        final String program = "unless (x > 10) goto foo;";
+        final Program expected = Program.of(List.of(
+            UnlessStatement.of(
+                BinaryExpression.of(">",
+                    Identifier.of("x"),
+                    NumericLiteralExpression.of(10)
+                ),
+                GotoStatement.of(Identifier.of("foo"))
+            )));
 
         assertEquals(json(expected), json(parse(program)));
     }

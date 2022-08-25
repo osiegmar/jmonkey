@@ -16,47 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.siegmar.jmonkey.encoder.script.parser.statement.AssignmentExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.BinaryExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.ExpressionStatement;
+import de.siegmar.jmonkey.encoder.script.parser.statement.Identifier;
 import de.siegmar.jmonkey.encoder.script.parser.statement.NumericLiteralExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
 
-class MathTest {
+class AssignmentTest {
 
     @Test
-    void binaryExpression() {
-        final String program = "2 + 3;";
+    void assignmentExpression() {
+        final String program = "x = 5;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("+",
-                    NumericLiteralExpression.of(2),
-                    NumericLiteralExpression.of(3)
-                )
-            )));
-        assertEquals(json(expected), json(parse(program)));
-    }
-
-    @Test
-    void multipleBinaryExpression() {
-        final String program = "2 + 3 - 1;";
-        final Program expected = Program.of(List.of(
-            ExpressionStatement.of(
-                BinaryExpression.of("-",
-                    BinaryExpression.of("+",
-                        NumericLiteralExpression.of(2),
-                        NumericLiteralExpression.of(3)
-                    ),
-                    NumericLiteralExpression.of(1)
+                AssignmentExpression.of("=",
+                    Identifier.of("x"),
+                    NumericLiteralExpression.of(5)
                 )
             )));
 
@@ -64,15 +50,15 @@ class MathTest {
     }
 
     @Test
-    void multiplicativeBinaryExpression() {
-        final String program = "2 + 3 * 4;";
+    void chainedAssignmentExpression() {
+        final String program = "x = y = 5;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("+",
-                    NumericLiteralExpression.of(2),
-                    BinaryExpression.of("*",
-                        NumericLiteralExpression.of(3),
-                        NumericLiteralExpression.of(4)
+                AssignmentExpression.of("=",
+                    Identifier.of("x"),
+                    AssignmentExpression.of("=",
+                        Identifier.of("y"),
+                        NumericLiteralExpression.of(5)
                     )
                 )
             )));
@@ -81,17 +67,47 @@ class MathTest {
     }
 
     @Test
-    void parenMultiplicativeBinaryExpression() {
-        final String program = "(2 + 3) * 4;";
+    void assignmentIdentifiers() {
+        final String program = "x = y;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("*",
-                    BinaryExpression.of("+",
-                        NumericLiteralExpression.of(2),
-                        NumericLiteralExpression.of(3)
-                    ),
-                    NumericLiteralExpression.of(4)
-                ))));
+                AssignmentExpression.of("=",
+                    Identifier.of("x"),
+                    Identifier.of("y")
+                )
+            )));
+
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void complexAssignment() {
+        final String program = "x += 5;";
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(
+                AssignmentExpression.of("+=",
+                    Identifier.of("x"),
+                    NumericLiteralExpression.of(5)
+                )
+            )));
+
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void assignmentBinaryExpression() {
+        final String program = "x = 5 + 2;";
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(
+                AssignmentExpression.of("=",
+                    Identifier.of("x"),
+                    BinaryExpression.of(
+                        "+",
+                        NumericLiteralExpression.of(5),
+                        NumericLiteralExpression.of(2)
+                    )
+                )
+            )));
 
         assertEquals(json(expected), json(parse(program)));
     }

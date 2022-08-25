@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;

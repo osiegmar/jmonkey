@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -27,22 +27,36 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import de.siegmar.jmonkey.encoder.script.parser.statement.ExpressionStatement;
-import de.siegmar.jmonkey.encoder.script.parser.statement.Identifier;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
-import de.siegmar.jmonkey.encoder.script.parser.statement.UnaryExpression;
+import de.siegmar.jmonkey.encoder.script.parser.statement.StringLiteralExpression;
 
-class UnaryTest {
+class CommentTest {
 
     @Test
-    void unary() {
-        final String program = "-x;";
-        final Program expected = Program.of(List.of(
-            ExpressionStatement.of(
-                UnaryExpression.of("-",
-                    Identifier.of("x")
-                )
-            )));
+    void singleLine() {
+        final String program = """
+            // FOO
+            "hello";
+            """;
 
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(StringLiteralExpression.of("hello"))
+        ));
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void multiLine() {
+        final String program = """
+            /*
+                 FOO
+            */
+            "hello";
+            """;
+
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(StringLiteralExpression.of("hello"))
+        ));
         assertEquals(json(expected), json(parse(program)));
     }
 

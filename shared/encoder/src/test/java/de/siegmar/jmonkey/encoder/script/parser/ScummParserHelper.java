@@ -16,19 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.siegmar.jmonkey.encoder.script.parser.ScummParser;
-import de.siegmar.jmonkey.encoder.script.parser.ScummTokenizer;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Statement;
 
-final class ScummParserHelper {
+public final class ScummParserHelper {
 
     private static final ObjectWriter OW = new ObjectMapper()
         .addMixIn(Program.class, AbstractBaseTypeMixIn.class)

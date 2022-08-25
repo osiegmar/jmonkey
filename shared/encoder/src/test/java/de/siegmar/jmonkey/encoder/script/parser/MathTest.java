@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -27,25 +27,36 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import de.siegmar.jmonkey.encoder.script.parser.statement.BinaryExpression;
-import de.siegmar.jmonkey.encoder.script.parser.statement.BooleanLiteralExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.ExpressionStatement;
-import de.siegmar.jmonkey.encoder.script.parser.statement.Identifier;
 import de.siegmar.jmonkey.encoder.script.parser.statement.NumericLiteralExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
 
-class EqualityTest {
+class MathTest {
 
     @Test
-    void equality() {
-        final String program = "x + 5 == 10;";
+    void binaryExpression() {
+        final String program = "2 + 3;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("==",
+                BinaryExpression.of("+",
+                    NumericLiteralExpression.of(2),
+                    NumericLiteralExpression.of(3)
+                )
+            )));
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void multipleBinaryExpression() {
+        final String program = "2 + 3 - 1;";
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(
+                BinaryExpression.of("-",
                     BinaryExpression.of("+",
-                        Identifier.of("x"),
-                        NumericLiteralExpression.of(5)
+                        NumericLiteralExpression.of(2),
+                        NumericLiteralExpression.of(3)
                     ),
-                    NumericLiteralExpression.of(10)
+                    NumericLiteralExpression.of(1)
                 )
             )));
 
@@ -53,16 +64,16 @@ class EqualityTest {
     }
 
     @Test
-    void notEqual() {
-        final String program = "x + 5 != 10;";
+    void multiplicativeBinaryExpression() {
+        final String program = "2 + 3 * 4;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("!=",
-                    BinaryExpression.of("+",
-                        Identifier.of("x"),
-                        NumericLiteralExpression.of(5)
-                    ),
-                    NumericLiteralExpression.of(10)
+                BinaryExpression.of("+",
+                    NumericLiteralExpression.of(2),
+                    BinaryExpression.of("*",
+                        NumericLiteralExpression.of(3),
+                        NumericLiteralExpression.of(4)
+                    )
                 )
             )));
 
@@ -70,18 +81,17 @@ class EqualityTest {
     }
 
     @Test
-    void bool() {
-        final String program = "x > 0 == true;";
+    void parenMultiplicativeBinaryExpression() {
+        final String program = "(2 + 3) * 4;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                BinaryExpression.of("==",
-                    BinaryExpression.of(">",
-                        Identifier.of("x"),
-                        NumericLiteralExpression.of(0)
+                BinaryExpression.of("*",
+                    BinaryExpression.of("+",
+                        NumericLiteralExpression.of(2),
+                        NumericLiteralExpression.of(3)
                     ),
-                    BooleanLiteralExpression.of(true)
-                )
-            )));
+                    NumericLiteralExpression.of(4)
+                ))));
 
         assertEquals(json(expected), json(parse(program)));
     }

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.siegmar.jmonkey.encoder.script;
+package de.siegmar.jmonkey.encoder.script.parser;
 
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.json;
-import static de.siegmar.jmonkey.encoder.script.ScummParserHelper.parse;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.json;
+import static de.siegmar.jmonkey.encoder.script.parser.ScummParserHelper.parse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -30,48 +30,18 @@ import de.siegmar.jmonkey.encoder.script.parser.statement.AssignmentExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.BinaryExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.ExpressionStatement;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Identifier;
+import de.siegmar.jmonkey.encoder.script.parser.statement.MemberExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.NumericLiteralExpression;
 import de.siegmar.jmonkey.encoder.script.parser.statement.Program;
 
-class AssignmentTest {
+class MemberTest {
 
     @Test
-    void assignmentExpression() {
-        final String program = "x = 5;";
+    void simple() {
+        final String program = "x.y;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                AssignmentExpression.of("=",
-                    Identifier.of("x"),
-                    NumericLiteralExpression.of(5)
-                )
-            )));
-
-        assertEquals(json(expected), json(parse(program)));
-    }
-
-    @Test
-    void chainedAssignmentExpression() {
-        final String program = "x = y = 5;";
-        final Program expected = Program.of(List.of(
-            ExpressionStatement.of(
-                AssignmentExpression.of("=",
-                    Identifier.of("x"),
-                    AssignmentExpression.of("=",
-                        Identifier.of("y"),
-                        NumericLiteralExpression.of(5)
-                    )
-                )
-            )));
-
-        assertEquals(json(expected), json(parse(program)));
-    }
-
-    @Test
-    void assignmentIdentifiers() {
-        final String program = "x = y;";
-        final Program expected = Program.of(List.of(
-            ExpressionStatement.of(
-                AssignmentExpression.of("=",
+                MemberExpression.of(false,
                     Identifier.of("x"),
                     Identifier.of("y")
                 )
@@ -81,33 +51,73 @@ class AssignmentTest {
     }
 
     @Test
-    void complexAssignment() {
-        final String program = "x += 5;";
+    void assignment() {
+        final String program = "x.y = 1;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
-                AssignmentExpression.of("+=",
-                    Identifier.of("x"),
-                    NumericLiteralExpression.of(5)
-                )
-            )));
+                AssignmentExpression.of("=",
+                    MemberExpression.of(false,
+                        Identifier.of("x"),
+                        Identifier.of("y")
+                    ),
+                    NumericLiteralExpression.of(1)
+                ))));
 
         assertEquals(json(expected), json(parse(program)));
     }
 
     @Test
-    void assignmentBinaryExpression() {
-        final String program = "x = 5 + 2;";
+    void assignmentComputed() {
+        final String program = "x[0] = 1;";
         final Program expected = Program.of(List.of(
             ExpressionStatement.of(
                 AssignmentExpression.of("=",
-                    Identifier.of("x"),
-                    BinaryExpression.of(
-                        "+",
-                        NumericLiteralExpression.of(5),
-                        NumericLiteralExpression.of(2)
-                    )
-                )
-            )));
+                    MemberExpression.of(true,
+                        Identifier.of("x"),
+                        NumericLiteralExpression.of(0)
+                    ),
+                    NumericLiteralExpression.of(1)
+                ))));
+
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void assignmentRecursiveComputedSimple() {
+        final String program = "x[1 + 2] = 3;";
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(
+                AssignmentExpression.of("=",
+                    MemberExpression.of(true,
+                        Identifier.of("x"),
+                        BinaryExpression.of("+",
+                            NumericLiteralExpression.of(1),
+                            NumericLiteralExpression.of(2)
+                        )
+                    ),
+                    NumericLiteralExpression.of(3)
+                ))));
+
+        assertEquals(json(expected), json(parse(program)));
+    }
+
+    @Test
+    void assignmentRecursiveComputed() {
+        final String program = "x[y[0] + 5] = 1;";
+        final Program expected = Program.of(List.of(
+            ExpressionStatement.of(
+                AssignmentExpression.of("=",
+                    MemberExpression.of(true,
+                        Identifier.of("x"),
+                        BinaryExpression.of("+",
+                            MemberExpression.of(true,
+                                Identifier.of("y"),
+                                NumericLiteralExpression.of(0)),
+                            NumericLiteralExpression.of(5)
+                        )
+                    ),
+                    NumericLiteralExpression.of(1)
+                ))));
 
         assertEquals(json(expected), json(parse(program)));
     }
