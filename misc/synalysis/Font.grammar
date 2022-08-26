@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ufwb version="1.24">
+    <grammar name="Font grammar" start="id:1" author="Oliver Siegmar" email="oliver@siegmar.de" fileextension="LFL" uti="public.data">
+        <description>Grammar for 90X.LFL font files. See https://osiegmar.github.io/jmonkey/file-formats/font-files/ for details.</description>
+        <structure name="Font" id="1" encoding="ISO_8859-1:1987" endian="little" signed="no">
+            <number name="Length" id="2" type="integer" length="4">
+                <description>Warning: wrong Length!</description>
+            </number>
+            <string name="Type" id="3" type="fixed-length" length="2"/>
+            <structure name="ColorMap" id="4">
+                <number name="Color" id="5" repeatmax="15" type="integer" length="1"/>
+            </structure>
+            <structure name="FontHeader" id="7">
+                <number name="Bpp" mustmatch="yes" id="8" type="integer" length="1">
+                    <fixedvalues>
+                        <fixedvalue name="1bpp" value="1"/>
+                        <fixedvalue name="2bpp" value="2"/>
+                    </fixedvalues>
+                </number>
+                <number name="Height" id="9" type="integer" length="1"/>
+                <number name="NumGlyphs" id="10" type="integer" length="2"/>
+                <structure name="GlyphOffsets" id="11">
+                    <number name="GlyphOffset" id="12" repeatmax="NumGlyphs" type="integer" length="4"/>
+                </structure>
+            </structure>
+            <structure name="Glyphs" id="15" repeatmax="-1">
+                <binary name="Glyphdata" id="65" length="remaining"/>
+            </structure>
+        </structure>
+    </grammar>
+</ufwb>
